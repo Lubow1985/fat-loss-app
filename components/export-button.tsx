@@ -8,38 +8,65 @@ export function ExportButton() {
   const { entries, goal, weightUnit } = useWeightTracker()
 
   const handleExport = () => {
-    // Create a data object with all user information
-    const exportData = {
-      entries,
-      goal,
-      weightUnit,
-      exportDate: new Date().toISOString()
+    // Create CSV header row
+    const headers = ['Date', 'Calories In', 'Calories Out', 'Net Calories', 'Weight'];
+    
+    // Format entries as CSV rows
+    const rows = entries.map(entry => {
+      const netCalories = entry.caloriesIn - entry.caloriesOut;
+      return [
+        entry.date,
+        entry.caloriesIn,
+        entry.caloriesOut,
+        netCalories,
+        entry.weight || ''
+      ].join(',');
+    });
+    
+    // Add goal information as metadata at the top
+    const goalInfo = [
+      `# Weight Loss Tracker Export - ${new Date().toLocaleDateString()}`,
+      `# Weight Unit: ${weightUnit}`,
+    ];
+    
+    if (goal) {
+      goalInfo.push(
+        `# Start Weight: ${goal.startWeight} ${weightUnit}`,
+        `# Target Weight: ${goal.targetWeight} ${weightUnit}`,
+        `# Start Date: ${goal.startDate}`,
+        `# Target Date: ${goal.targetDate}`,
+        `# Daily Calorie Deficit Goal: ${goal.startingCalorieDeficit} calories`
+      );
     }
-
-    // Convert to JSON string
-    const jsonString = JSON.stringify(exportData, null, 2)
+    
+    // Combine everything into CSV content
+    const csvContent = [
+      ...goalInfo,
+      headers.join(','),
+      ...rows
+    ].join('\n');
     
     // Create a blob with the data
-    const blob = new Blob([jsonString], { type: "application/json" })
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
     
     // Create a URL for the blob
-    const url = URL.createObjectURL(blob)
+    const url = URL.createObjectURL(blob);
     
     // Create a temporary link element
-    const link = document.createElement("a")
-    link.href = url
+    const link = document.createElement("a");
+    link.href = url;
     
     // Set the download filename with current date
-    const date = new Date().toISOString().split("T")[0]
-    link.download = `fat-loss-data-${date}.json`
+    const date = new Date().toISOString().split("T")[0];
+    link.download = `fat-loss-data-${date}.csv`;
     
     // Append to body, click, and remove
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     
     // Release the URL object
-    URL.revokeObjectURL(url)
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -49,7 +76,7 @@ export function ExportButton() {
       variant="outline"
     >
       <Download size={16} />
-      Export Data
+      Export to CSV
     </Button>
   )
 } 
