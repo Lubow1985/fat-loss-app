@@ -4,6 +4,8 @@ import DailyEntry from "@/components/daily-entry"
 import Dashboard from "@/components/dashboard"
 import { WeightTrackerProvider } from "@/components/weight-tracker-context"
 import { ResetButton } from "@/components/reset-button"
+import { ExportButton } from "@/components/export-button"
+import { ImportButton } from "@/components/import-button"
 
 export default function Home() {
   return (
@@ -37,7 +39,9 @@ export default function Home() {
 
               <TabsContent value="goals">
                 <GoalSetting />
-                <div className="mt-8">
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <ExportButton />
+                  <ImportButton />
                   <ResetButton />
                 </div>
               </TabsContent>
