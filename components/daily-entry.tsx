@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { CalendarIcon, Plus, Trash2 } from "lucide-react"
-import { format, addDays } from "date-fns"
+import { format, addDays, subDays } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
@@ -20,7 +20,7 @@ export default function DailyEntry() {
   const { entries, addEntry, updateEntry, getNetCalories, weightUnit, goal, deleteEntry } = useWeightTracker()
   const targetDeficit = goal?.startingCalorieDeficit ?? 500
 
-  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [date, setDate] = useState<Date | undefined>(subDays(new Date(), 1))
   const [caloriesIn, setCaloriesIn] = useState<number>(0)
   const [caloriesOut, setCaloriesOut] = useState<number>(0)
   const [weight, setWeight] = useState<number | undefined>(undefined)
